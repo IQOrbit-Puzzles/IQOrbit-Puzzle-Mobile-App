@@ -15,6 +15,17 @@
     ],
     "android": {
       "package": "com.angad.iqorbitpuzzles"
+    },
+    "androidStatusBar": {
+      "translucent": true,
+      "backgroundColor": "transparent",
+      "barStyle": "light-content"
+    },
+    "androidNavigationBar": {
+      "visible": "overlay",              
+      "backgroundColor": "transparent",
+      "barStyle": "light-content",
+      "behavior": "inset-swipe" 
     }
   }
 }

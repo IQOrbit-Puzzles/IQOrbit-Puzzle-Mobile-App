@@ -7,12 +7,15 @@ import TypeCard from '../components/TypeCard';
 import { PUZZLE_TYPES } from '../data/puzzles';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function HomeScreen({ navigation }: NativeStackScreenProps<RootStackParamList, 'Home'>) {
+  const insets = useSafeAreaInsets();
+
   const { palette, spacing } = useTheme();
   return (
     <GradientBackground>
-      <ScrollView contentContainerStyle={{ padding: spacing.lg }}>
+      <ScrollView contentContainerStyle={{ paddingTop: insets.top, paddingBottom: insets.bottom, paddingHorizontal: spacing.lg }}>
         <Text style={[styles.title, { color: palette.text }]}>Choose Puzzle Type</Text>
         <Text style={[styles.subtitle, { color: palette.subtext }]}>Start with any category. New puzzles can be added anytime.</Text>
         <View style={{ height: 16 }} />

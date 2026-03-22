@@ -7,8 +7,11 @@ import { getTypeById, getPuzzlesByType } from '../data/puzzles';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
 import PuzzleRow from '../components/PuzzleRow';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function TypeScreen({ route, navigation }: NativeStackScreenProps<RootStackParamList, 'Type'>) {
+  const insets = useSafeAreaInsets();
+
   const { typeId } = route.params;
   const type = getTypeById(typeId);
   const puzzles = getPuzzlesByType(typeId);
@@ -26,7 +29,7 @@ export default function TypeScreen({ route, navigation }: NativeStackScreenProps
 
   return (
     <GradientBackground>
-      <ScrollView contentContainerStyle={{ padding: spacing.lg }}>
+      <ScrollView contentContainerStyle={{ paddingTop: insets.top, paddingBottom: insets.bottom, paddingHorizontal: spacing.lg }}>
         <Pressable onPress={() => navigation.goBack()}>
           <Text style={{ color: type.color, fontWeight: '800' }}>{'‹ Back'}</Text>
         </Pressable>

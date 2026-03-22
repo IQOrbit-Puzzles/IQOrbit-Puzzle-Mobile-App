@@ -22,7 +22,7 @@ export default function App() {
   return (
     <ThemeProvider>
       <NavigationContainer theme={DarkTheme}>
-        <StatusBar style="light" />
+        <StatusBar style="light" translucent backgroundColor="transparent" />
         <Stack.Navigator initialRouteName="Splash" screenOptions={{ headerShown: false }}>
           <Stack.Screen name="Splash" component={SplashScreen} />
           <Stack.Screen name="Home" component={HomeScreen} />
