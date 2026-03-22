@@ -1,0 +1,63 @@
+
+name: Build iOS IPA (EAS)
+
+on:
+  workflow_dispatch:
+  push:
+    tags: ['v*']
+
+jobs:
+  build-ios:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Setup Expo/EAS
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install jq (JSON parser)
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Trigger iOS build (IPA)
+        id: build
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          # Optional: provide App Store Connect API credentials to allow non-interactive fixes
+          EXPO_ASC_API_KEY_ID: ${{ secrets.ASC_API_KEY_ID }}
+          EXPO_ASC_API_KEY_ISSUER_ID: ${{ secrets.ASC_API_ISSUER_ID }}
+          EXPO_ASC_API_KEY: ${{ secrets.ASC_API_KEY }}
+        run: |
+          BUILD_JSON=$(eas build --platform ios --profile internal --non-interactive --json)
+          echo "$BUILD_JSON" > build-ios.json
+          BUILD_ID=$(echo "$BUILD_JSON" | jq -r '.id // .[0].id')
+          echo "build_id=$BUILD_ID" >> $GITHUB_OUTPUT
+
+      - name: Wait for EAS build to finish
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: eas build:wait --non-interactive --build-id ${{ steps.build.outputs.build_id }}
+
+      - name: Download iOS artifact
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: |
+          mkdir -p artifacts
+          eas build:download --non-interactive --build-id ${{ steps.build.outputs.build_id }} --path artifacts/iqorbit-ios.ipa
+
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: iqorbit-ios-ipa
+          path: artifacts/iqorbit-ios.ipa
